@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* An active class was remove active:scale[1.02] */
+.state-effects {
+  @apply hover:scale-105 focus:scale-105 transition;
+}
 /* SCROLLBAR STYLING */
 /* Chrome, Edge, and Safari */
 ::-webkit-scrollbar {
