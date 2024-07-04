@@ -5,6 +5,7 @@ import Loading from "./loading";
 
 import { Metadata } from "next";
 import { capitalize } from "@/lib/utils";
+import { z } from "zod";
 
 
 type Props = {
@@ -27,9 +28,15 @@ export function generateMetadata({ params }: Props): Metadata {
   }
 };
 
+
+const pageNumberSchema = z.coerce.number().int().positive().optional();
+
 export default async function Events({ params, searchParams }: EventsPageProps) {
   const { city } = params;
-  const page = searchParams.page || 1;
+  const parsedPage = pageNumberSchema.safeParse(searchParams.page);
+  if (!parsedPage.success) {
+    throw new Error("Invalid page number");
+  }
 
   return (
     <main className="flex flex-col items-center py-24 px-[20px] min-h-[110vh]">
@@ -39,8 +46,8 @@ export default async function Events({ params, searchParams }: EventsPageProps) 
           : `Events in ${capitalize(city)}`}
       </H1>
 
-      <Suspense  key={city + page} fallback={<Loading />}>
-        <EventsList city={city} page={+page} />
+      <Suspense  key={city + parsedPage.data} fallback={<Loading />}>
+        <EventsList city={city} page={parsedPage.data} />
       </Suspense>
     </main>
   );
